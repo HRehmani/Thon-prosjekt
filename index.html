@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thon Hotels - Book Konferanserom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background-color: #F5F5F5; /* Thon lys grå */
+        }
+
+        /* Header */
+        .header {
+            background-color: #FFFFFF; /* Thon hvit */
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #E61E26; /* Thon rød */
+        }
+
+        .header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333333; /* Thon mørk grå */
+            font-size: 16px;
+        }
+
+        .header .book-now {
+            background-color: #E61E26; /* Thon rød */
+            color: #FFFFFF; /* Thon hvit */
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        /* Resultat-seksjon: Fullbredde cards */
+        .results {
+            padding: 40px 0;
+        }
+
+        .results h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333333; /* Thon mørk grå */
+            text-align: center;
+        }
+
+        .result-card {
+            background: #FFFFFF; /* Thon hvit */
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+            height: 500px; /* Stor høyde for dramatiske cards */
+            width: 100%; /* Full skjermbredde */
+            cursor: pointer;
+        }
+
+        .result-card .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .result-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .result-card .info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(51, 51, 51, 0.8); /* Thon mørk grå med opacity */
+            color: #FFFFFF; /* Thon hvit */
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .result-card:hover .info-overlay {
+            transform: translateY(0);
+        }
+
+        .result-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-card p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .result-card .book-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: #E61E26; /* Thon rød */
+            color: #FFFFFF; /* Thon hvit */
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* Modal for booking-side */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #FFFFFF; /* Thon hvit */
+            padding: 40px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333333; /* Thon mørk grå */
+        }
+
+        .modal-content h2 {
+            font-size: 28px;
+            color: #333333; /* Thon mørk grå */
+            margin-bottom: 20px;
+        }
+
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-content input, .modal-content select {
+            padding: 10px;
+            border: 1px solid #333333; /* Thon mørk grå */
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal-content .addons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-content .addons label {
+            font-size: 16px;
+            color: #333333; /* Thon mørk grå */
+        }
+
+        .modal-content button {
+            background-color: #E61E26; /* Thon rød */
+            color: #FFFFFF; /* Thon hvit */
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .modal-content button:hover {
+            background-color: #c1152f; /* Mørkere Thon rød */
+        }
+
+        /* Responsiv design */
+        @media (max-width: 768px) {
+            .result-card {
+                height: 300px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Thon Hotels</div>
+        <nav>
+            <a href="#">Hoteller</a>
+            <a href="#">Konferanser</a>
+            <a href="#">Tilbud</a>
+            <a href="#">Lojalitet</a>
+        </nav>
+        <a href="#" class="book-now">Book nå</a>
+    </header>
+
+    <!-- Resultat-seksjon med fullbredde cards -->
+    <section class="results">
+        <h2>Anbefalte konferanserom</h2>
+        <div class="result-card" data-room="Alpha">
+            <div class="image-container">
+                <img src="bilder.PNG/konferanserom1.png" alt="Konferanserom Alpha"> <!-- Lokal fil i bilder.PNG-mappe -->
+                <div class="info-overlay">
+                    <h3>Konferanserom Alpha</h3>
+                    <p>Størrelse: 100 m²</p>
+                    <p>Plasser: 50 personer</p>
+                    <p>Areal: 100 kvm</p>
+                    <p>Andre detaljer: Moderne AV-utstyr, dagslys</p>
+                </div>
+            </div>
+            <a class="book-btn" onclick="openModal('Alpha')">Book dette rommet</a>
+        </div>
+        <div class="result-card" data-room="Beta">
+            <div class="image-container">
+                <img src="bilder.PNG/konferanserom2.png" alt="Konferanserom Beta"> <!-- Lokal fil i bilder.PNG-mappe -->
+                <div class="info-overlay">
+                    <h3>Konferanserom Beta</h3>
+                    <p>Størrelse: 150 m²</p>
+                    <p>Plasser: 80 personer</p>
+                    <p>Areal: 150 kvm</p>
+                    <p>Andre detaljer: Scene, cateringmuligheter</p>
+                </div>
+            </div>
+            <a class="book-btn" onclick="openModal('Beta')">Book dette rommet</a>
+        </div>
+        <div class="result-card" data-room="Gamma">
+            <div class="image-container">
+                <img src="bilder.PNG/konferanserom3.png" alt="Konferanserom Gamma"> <!-- Lokal fil i bilder.PNG-mappe -->
+                <div class="info-overlay">
+                    <h3>Konferanserom Gamma</h3>
+                    <p>Størrelse: 80 m²</p>
+                    <p>Plasser: 30 personer</p>
+                    <p>Areal: 80 kvm</p>
+                    <p>Andre detaljer: Fjordutsikt, team-building tilpasset</p>
+                </div>
+            </div>
+            <a class="book-btn" onclick="openModal('Gamma')">Book dette rommet</a>
+        </div>
+    </section>
+
+    <!-- Modal for booking-side -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Book hele oppholdet for Konferanserom</h2>
+            <form>
+                <select id="location">
+                    <option>Lokasjon</option>
+                    <option>Oslo</option>
+                    <option>Bergen</option>
+                    <option>Tromsø</option>
+                </select>
+                <input type="date" placeholder="Dato">
+                <input type="number" placeholder="Antall personer">
+                <select id="eventType">
+                    <option>Arrangementstype</option>
+                    <option>Møte</option>
+                    <option>Vinsmaking</option>
+                    <option>Bankett</option>
+                </select>
+                <div class="addons">
+                    <label><input type="checkbox"> Legg til vinsmaking</label>
+                    <label><input type="checkbox"> Book hotellrom for overnatting</label>
+                    <label><input type="checkbox"> Anbefalt spa-behandling</label>
+                    <label><input type="checkbox"> Andre aktiviteter (f.eks. kokkekurs)</label>
+                </div>
+                <button type="button">Bekreft booking</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for modal (simulerer ny booking-side)
+        function openModal(roomName) {
+            document.getElementById('modalTitle').innerText = `Book hele oppholdet for Konferanserom ${roomName}`;
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        // Lukk modal ved klikk utenfor
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
